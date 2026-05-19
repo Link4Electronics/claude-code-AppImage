@@ -33,6 +33,9 @@ cc -O2 -fPIC -shared -Wall -s \
    ./sharun-bun-fix.c -ldl
 echo 'sharun-bun-fix.so' >> ./AppDir/.preload
 
+# bun binaries are also very delicate and get broken by strip
+cp -v /opt/claude-code/bin/claude ./AppDir/shared/bin
+
 # Additional changes can be done in between here
 
 # Turn AppDir into AppImage
