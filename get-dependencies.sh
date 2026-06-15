@@ -12,15 +12,19 @@ echo "Installing debloated packages..."
 echo "---------------------------------------------------------------"
 get-debloated-pkgs --add-common --prefer-nano
 
-# Comment this out if you need an AUR package
-make-aur-package claude-code
-
 # If the application needs to be manually built that has to be done down here
+echo "Downloading claude-code binary..."
+echo "---------------------------------------------------------------"
+case "$ARCH" in
+	x86_64)  farch=x64;;
+	aarch64) farch=arm64;;
+esac
+VERSION=$(wget https://registry.npmjs.org/@anthropic-ai/claude-code/latest -O - | jq -r '.version')
+link="https://downloads.claude.ai/claude-code-releases/$VERSION/linux-$farch/claude"
 
-# if you also have to make nightly releases check for DEVEL_RELEASE = 1
-#
-# if [ "${DEVEL_RELEASE-}" = 1 ]; then
-# 	nightly build steps
-# else
-# 	regular build steps
-# fi
+mkdir -p ./AppDir/bin
+wget --retry-connrefused --tries=30 "$link" -O ./AppDir/bin/claude
+chmod +x ./AppDir/bin/claude
+
+echo "$VERSION" > ~/version
+

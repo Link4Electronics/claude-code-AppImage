@@ -3,8 +3,7 @@
 set -eu
 
 ARCH=$(uname -m)
-VERSION=$(pacman -Q claude-code | awk '{print $2; exit}') # example command to get version of application here
-export ARCH VERSION
+export ARCH
 export OUTPATH=./dist
 export ADD_HOOKS="self-updater.hook"
 export UPINFO="gh-releases-zsync|${GITHUB_REPOSITORY%/*}|${GITHUB_REPOSITORY#*/}|latest|*$ARCH.AppImage.zsync"
@@ -13,7 +12,7 @@ export DESKTOP=DUMMY
 export MAIN_BIN=claude
 
 # Deploy dependencies
-quick-sharun /opt/claude-code/bin/claude
+quick-sharun ./AppDir/bin/*
 echo 'DISABLE_AUTOUPDATER=1' >> ./AppDir/.env
 
 # ---------------------------------------------------------------
@@ -32,9 +31,6 @@ cc -O2 -fPIC -shared -Wall -s \
    -o ./AppDir/shared/lib/sharun-bun-fix.so \
    ./sharun-bun-fix.c -ldl
 echo 'sharun-bun-fix.so' >> ./AppDir/.preload
-
-# bun binaries are also very delicate and get broken by strip
-cp -v /opt/claude-code/bin/claude ./AppDir/shared/bin
 
 # Additional changes can be done in between here
 
